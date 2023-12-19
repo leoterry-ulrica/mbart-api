@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  mbart-translate-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: weifj/mbart-translate-api:latest
+    container_name: mbart-translate-api
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_PATH=/data/models
+    volumes:
+      - /YOUR/LOCAL/PATH:/data/models
