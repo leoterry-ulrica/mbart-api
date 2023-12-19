@@ -5,7 +5,7 @@ from uvicorn import run
 from pydantic import BaseModel, Field
 import torch
 
-app = FastAPI()
+app = FastAPI(title='API-翻译服务')
 model_path = os.getenv("MODEL_PATH", "facebook/mbart-large-50-many-to-many-mmt")
 print(f'model_path: {model_path}')
 
@@ -128,12 +128,16 @@ async def translate_text(request: TranslationRequest):
     forced_bos_token_id = tokenizer.lang_code_to_id.get(full_target_lang)
     if forced_bos_token_id is None:
         raise HTTPException(status_code=400, detail=f"Invalid target language code: {target_lang}")
-    generated_tokens = model.generate(
-        **encoded_text,
-        forced_bos_token_id=forced_bos_token_id
-    )
+    
+    # Generate translation
+    if DEVICE == 'cuda':
+        # If using CUDA, move tensors to the GPU
+        encoded_text = {key: value.to('cuda') for key, value in encoded_text.items()}
+
+    generated_tokens = model.generate(**encoded_text, forced_bos_token_id=forced_bos_token_id)
+    
     translated_text = tokenizer.batch_decode(generated_tokens, skip_special_tokens=True)[0]
     return {"source_lang": source_lang, "target_lang": target_lang, "text": text, "translated_text": translated_text}
 
 if __name__ == "__main__":
-    run(app, host="0.0.0.0", port=12000)
+    run(app, host="0.0.0.0", port=23129)
