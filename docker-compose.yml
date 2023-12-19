@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: weifj/mbart-translate-api:latest
+    image: tys/mbart-translate-api:latest
     container_name: mbart-translate-api
     ports:
       - "23129:23129"
