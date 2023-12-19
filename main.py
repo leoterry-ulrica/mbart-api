@@ -4,17 +4,17 @@ from transformers import MBartForConditionalGeneration, MBart50TokenizerFast
 from uvicorn import run
 from pydantic import BaseModel, Field
 import torch
+from config import Settings
 
-app = FastAPI(title='API-翻译服务')
-model_path = os.getenv("MODEL_PATH", "facebook/mbart-large-50-many-to-many-mmt")
-print(f'model_path: {model_path}')
+SETTINGS = Settings()
 
-# Check if CUDA GPU is available
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-print(f'DEVICE: {DEVICE}')
+print(f'model_path: {SETTINGS.model_path}')
 
-model = MBartForConditionalGeneration.from_pretrained(model_path).to(DEVICE)
-tokenizer = MBart50TokenizerFast.from_pretrained(model_path)
+# DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(f'DEVICE: {SETTINGS.device}')
+
+model = MBartForConditionalGeneration.from_pretrained(SETTINGS.model_path).to(SETTINGS.device)
+tokenizer = MBart50TokenizerFast.from_pretrained(SETTINGS.model_path)
 
 class TranslationRequest(BaseModel):
     source_lang: str = Field('zh', description="原始文本语言类型")
@@ -88,6 +88,9 @@ def get_lang_info(language_code: str):
         raise HTTPException(status_code=404, detail=f"Language code {language_code} not found")
     return lang_info
 
+
+app = FastAPI(title='API-翻译服务')
+
 @app.get("/v1/lang/support", summary='获取支持的语种')
 async def get_languages(lang_code: str = None):
     if lang_code is None:
@@ -130,7 +133,7 @@ async def translate_text(request: TranslationRequest):
         raise HTTPException(status_code=400, detail=f"Invalid target language code: {target_lang}")
     
     # Generate translation
-    if DEVICE == 'cuda':
+    if SETTINGS.device == 'cuda':
         # If using CUDA, move tensors to the GPU
         encoded_text = {key: value.to('cuda') for key, value in encoded_text.items()}
 

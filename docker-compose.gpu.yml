@@ -11,13 +11,18 @@ services:
           devices:
             - driver: nvidia
               count: 1
+              device_ids: ['0']  # 指定gpu
               capabilities: [gpu]
     image: tys/mbart-translate-api:latest
     container_name: mbart-translate-api
+    restart: always
     ports:
       - "23129:23129"
+    env_file:
+      - .env.example
     environment:
       - MODEL_PATH=/data/models
+      - DEVICE=cuda
     volumes:
-      - ./:/app
+      - $PWD:/app
       - /YOUR/LOCAL/PATH:/data/models

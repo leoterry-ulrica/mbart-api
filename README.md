@@ -22,6 +22,7 @@ Arabic (ar_AR), Czech (cs_CZ), German (de_DE), English (en_XX), Spanish (es_XX),
 git clone https://github.com/leoterry-ulrica/mbart-api
 cd mbart-api
 pip install -r requirements.txt
+cp .env.example .env
 # 下载模型文件：facebook/mbart-large-50-many-to-many-mmt，放在指定目录，设置环境变量：MODEL_PATH
 uvicorn main:app
 ```
