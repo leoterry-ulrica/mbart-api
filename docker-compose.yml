@@ -12,4 +12,5 @@ services:
     environment:
       - MODEL_PATH=/data/models
     volumes:
+      - ./:/app
       - /YOUR/LOCAL/PATH:/data/models

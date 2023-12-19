@@ -17,7 +17,7 @@ model = MBartForConditionalGeneration.from_pretrained(model_path).to(DEVICE)
 tokenizer = MBart50TokenizerFast.from_pretrained(model_path)
 
 class TranslationRequest(BaseModel):
-    source_lang: str = Field('zh_CN', description="原始文本语言类型")
+    source_lang: str = Field('zh', description="原始文本语言类型")
     target_lang: str = Field('en', description="目标文本语言类型")
     text: str = Field(None, description="需要翻译的文本内容")
 
