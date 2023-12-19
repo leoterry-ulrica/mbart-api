@@ -36,4 +36,6 @@ docker-compose -f docker-compose.gpu.yml up -d
 ```
 
 # FastAPI
+访问：http://127.0.0.1:23129/docs
+
 ![API接口](./images/swagger-ui.png)
