@@ -10,8 +10,9 @@ SETTINGS = Settings()
 
 print(f'model_path: {SETTINGS.model_path}')
 
-# DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-print(f'DEVICE: {SETTINGS.device}')
+# 判断是否已经设置了DEVICE，且不为空字符串或None
+DEVICE = getattr(SETTINGS, 'device', 'cuda' if torch.cuda.is_available() else 'cpu')
+print(f'DEVICE: {DEVICE}')
 
 model = MBartForConditionalGeneration.from_pretrained(SETTINGS.model_path).to(SETTINGS.device)
 tokenizer = MBart50TokenizerFast.from_pretrained(SETTINGS.model_path)
@@ -133,7 +134,7 @@ async def translate_text(request: TranslationRequest):
         raise HTTPException(status_code=400, detail=f"Invalid target language code: {target_lang}")
     
     # Generate translation
-    if SETTINGS.device == 'cuda':
+    if DEVICE == 'cuda':
         # If using CUDA, move tensors to the GPU
         encoded_text = {key: value.to('cuda') for key, value in encoded_text.items()}
 
